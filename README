@@ -1,0 +1,13 @@
+# Project Title
+
+## Description
+This project is a terminal-based menu system using the `curses` library in Python. It allows users to validate the environment, normalize the environment, and install Magento.
+
+## Dependencies
+- Python 3.x
+- curses library
+
+## Steps to Run
+1. Clone the repository: `git clone https://github.com/ddaGarrido/magento-installer.git`
+2. Navigate to the project directory: `cd magento-installer`
+3. Run the project: `python3 setup.py`
