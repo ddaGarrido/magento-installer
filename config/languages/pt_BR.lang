@@ -1,0 +1,5 @@
+MENU_TITLE=Menu Principal
+VALIDATE_ENVIRONMENT=Validar Ambiente
+NORMALIZE_ENVIRONMENT=Normalizar Ambiente
+INSTALL_MAGENTO=Instalar Magento
+EXIT=Sair

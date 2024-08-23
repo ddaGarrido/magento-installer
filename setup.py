@@ -1,10 +1,10 @@
 import curses
 import subprocess
 import re
+import os
 
-from utils import init_screen, end_screen, show_message
-
-SHOULD_QUIT = False
+from utils.system import config
+from utils.utils import show_message
 
 class MenuItem:
     def __init__(self, text, action, color_pair=4):
@@ -22,11 +22,14 @@ class Menu:
         height, width = self.stdscr.getmaxyx()
         win = curses.newwin(height - 2, width - 2, 1, 1)
         
+        # Center the window label
+        label = f" {config.LANGUAGE_STRINGS['MENU_TITLE']} "
+        x_pos = (width // 2) - (len(label) // 2)
         win.attron(curses.color_pair(5))
         win.box()
         win.attroff(curses.color_pair(5))
-        win.addstr(0, 2, " Menu Principal ", curses.color_pair(5) | curses.A_BOLD)
-        
+        win.addstr(0, x_pos, label, curses.color_pair(5) | curses.A_BOLD)
+
         for idx, item in enumerate(self.items):
             x = 2
             y = 2 + idx
@@ -53,7 +56,7 @@ class Menu:
 
     
     def run(self):
-        while not SHOULD_QUIT:
+        while not config.SHOULD_QUIT:
             self.display()
             
 
@@ -77,6 +80,24 @@ def check_service(service_name, regex, command=None):
 
 def validate_environment(win):
     win.clear()
+
+    # Ask user for Magento version
+    magento_versions = config.MAGENTO_VERSIONS
+    win.addstr(2, 2, config.LANGUAGE_STRINGS["VALIDATE_ENVIRONMENT"], curses.color_pair(5))
+    for idx, version in enumerate(magento_versions):
+        x = 2
+        y = 4 + idx
+        if idx == 0:
+            win.attron(curses.color_pair(4))
+            win.addstr(y, x, version)
+            win.attroff(curses.color_pair(4))
+        else:
+            win.addstr(y, x, version)
+    win.addstr(4 + len(magento_versions), 2, "Pressione ENTER para confirmar", curses.color_pair(5))
+    win.refresh()
+
+    # Validate based on the selected Magento version
+    # TODO: Implement Magento version validation
     
     services = {
         "nginx": ("([^\n]+)", None),
@@ -108,72 +129,14 @@ def validate_environment(win):
     win.getch()
 
 def quit_program(win):
-    global SHOULD_QUIT
-    SHOULD_QUIT = True
-
-def main_menu(stdscr):
-    menu_items = ["Validar o Ambiente", "Normalizar o Ambiente", "Instalar o Magento", "Sair"]
-    current_row = 0
-    
-    while True:
-        height, width = stdscr.getmaxyx()
-        win = curses.newwin(height - 2, width - 2, 1, 1)
-        
-        win.attron(curses.color_pair(5))
-        win.box()
-        win.attroff(curses.color_pair(5))
-        win.addstr(0, 2, " Menu Principal ", curses.color_pair(5) | curses.A_BOLD)
-        
-        for idx, row in enumerate(menu_items):
-            x = 2
-            y = 2 + idx
-            if idx == current_row:
-                win.attron(curses.color_pair(4))
-                win.addstr(y, x, row)
-                win.attroff(curses.color_pair(4))
-            else:
-                win.addstr(y, x, row)
-        
-        win.refresh()
-        key = stdscr.getch()
-
-        if key == curses.KEY_UP and current_row > 0:
-            current_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(menu_items) - 1:
-            current_row += 1
-        elif key == curses.KEY_ENTER or key in [10, 13]:
-            if current_row == 0:
-                validate_environment(win)
-            elif current_row == 1:
-                show_message(stdscr, "Normalização", "Normalização do ambiente ainda não implementada.", curses.color_pair(3))
-            elif current_row == 2:
-                show_message(stdscr, "Instalação", "Instalação do Magento ainda não implementada.", curses.color_pair(3))
-            elif current_row == 3:
-                break
+    config.SHOULD_QUIT = True
 
 def main(stdscr):
-    # stdscr = init_screen()
-    # try:
-    #     main_menu(stdscr)
-    # finally:
-    #     end_screen(stdscr)
-    curses.noecho()
-    curses.cbreak()
-    stdscr.nodelay(1)
-    stdscr.keypad(True)
-    curses.curs_set(0)
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_CYAN, curses.COLOR_BLACK)
-    curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLUE)
+    config.initialize(stdscr)
 
     menu_items = [
-        MenuItem("Validar o Ambiente", validate_environment),
-        MenuItem("Normalizar o Ambiente", show_message(stdscr, "Normalização", "Normalização do ambiente ainda não implementada.", 3), 4),
-        #MenuItem("Instalar o Magento", show_message(stdscr, "Instalação", "Instalação do Magento ainda não implementada.", 3)),
-        MenuItem("Sair", quit_program)
+        MenuItem(config.LANGUAGE_STRINGS["VALIDATE_ENVIRONMENT"], validate_environment),
+        MenuItem(config.LANGUAGE_STRINGS["EXIT"], quit_program)
     ]
 
     menu = Menu(stdscr, menu_items)
