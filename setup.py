@@ -1,10 +1,8 @@
 import curses
 import subprocess
 import re
-import os
 
 from utils.system import config
-from utils.utils import show_message
 
 class MenuItem:
     def __init__(self, text, action, color_pair=4):
