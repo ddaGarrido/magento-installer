@@ -1,0 +1,16 @@
+#### Titles
+TITLE_MENU=Main Menu
+TITLE_VALIDATE_ENVIRONMENT=Environment Validation Results
+
+#### Buttons
+BTN_RETURN_TO_MENU=Back to Main Menu
+
+#### Menu Buttons
+VALIDATE_ENVIRONMENT=Validate Environment
+NORMALIZE_ENVIRONMENT=Normalize Environment
+INSTALL_MAGENTO=Install Magento
+EXIT=Exit
+
+#### Validation Results
+INSTALLED=INSTALLED
+NOT_INSTALLED=NOT INSTALLED

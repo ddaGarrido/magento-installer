@@ -1,6 +1,11 @@
 import os
 import curses
+from os import path
+from dotenv import load_dotenv
 from .loaders import load_language, load_theme
+
+BASE_CONFIG_PATH = path.abspath(path.join(path.dirname(__file__), "..", ".."))
+load_dotenv(BASE_CONFIG_PATH + "/environment.env")
 
 # Global Variables
 INTERFACE_LANGUAGE = None
@@ -18,6 +23,7 @@ def initialize(stdscr):
     MAGENTO_VERSIONS = os.getenv("MAGENTO_VERSIONS", "2.4.3").split(",")
     API_TOKEN = os.getenv("API_TOKEN", "")
     THEME = os.getenv("THEME", "default")
+    os.environ["INTERFACE_LANGUAGE"] = INTERFACE_LANGUAGE
 
     load_language(INTERFACE_LANGUAGE)
     load_theme(THEME)
@@ -30,5 +36,3 @@ def initialize(stdscr):
     curses.curs_set(0)
     curses.start_color()
     curses.start_color()
-    for idx, (key, (fg, bg)) in enumerate(COLOR_PAIRS.items(), start=1):
-        curses.init_pair(idx, fg, bg)

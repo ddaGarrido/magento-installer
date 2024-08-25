@@ -11,6 +11,8 @@ def load_language(language):
     language_file = BASE_CONFIG_PATH + f"/languages/{language}.lang"
     with open(language_file, 'r') as file:
         for line in file:
+            if line.startswith("#") or not line.strip():
+                continue
             key, value = line.strip().split("=")
             config.LANGUAGE_STRINGS[key] = value
 
