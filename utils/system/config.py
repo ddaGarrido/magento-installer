@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from .loaders import load_language, load_theme
 
 BASE_CONFIG_PATH = path.abspath(path.join(path.dirname(__file__), "..", ".."))
-load_dotenv(BASE_CONFIG_PATH + "/environment.env")
+load_dotenv(BASE_CONFIG_PATH + "/.env")
 
 # Global Variables
 INTERFACE_LANGUAGE = None
@@ -17,16 +17,18 @@ LANGUAGE_STRINGS = {}
 COLOR_PAIRS = {}
 
 def initialize(stdscr):
-    global INTERFACE_LANGUAGE, MAGENTO_VERSIONS, API_TOKEN, THEME, COLOR_PAIRS
+    global INTERFACE_LANGUAGE, INTERFACE_THEME, MAGENTO_VERSIONS, API_TOKEN, COLOR_PAIRS
 
-    INTERFACE_LANGUAGE = os.getenv("INTERFACE_LANGUAGE", "pt_BR")
+    INTERFACE_LANGUAGE = os.getenv("INTERFACE_LANGUAGE", "en_US")
+    INTERFACE_THEME = os.getenv("INTERFACE_THEME", "default")
+
     MAGENTO_VERSIONS = os.getenv("MAGENTO_VERSIONS", "2.4.3").split(",")
     API_TOKEN = os.getenv("API_TOKEN", "")
-    THEME = os.getenv("THEME", "default")
+
     os.environ["INTERFACE_LANGUAGE"] = INTERFACE_LANGUAGE
 
     load_language(INTERFACE_LANGUAGE)
-    load_theme(THEME)
+    load_theme(INTERFACE_THEME)
 
     stdscr.nodelay(1)
     stdscr.keypad(True)
@@ -36,3 +38,6 @@ def initialize(stdscr):
     curses.curs_set(0)
     curses.start_color()
     curses.start_color()
+
+def get_language_string(key):
+    return LANGUAGE_STRINGS[key] if key in LANGUAGE_STRINGS else key

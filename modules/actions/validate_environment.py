@@ -1,9 +1,9 @@
-import curses
 import subprocess
 import re
-
-from utils.system import config
-from modules.ui_to_remove.menu_to_remove import Menu, MenuItem  
+import curses
+from modules.curses.Menu import Menu
+from modules.curses.MenuItem import MenuItem
+#from utils.system import config
 
 def check_service(service_name, regex, command=None):
     try:
@@ -38,26 +38,10 @@ def validate_environment(stdscr):
         status, result = check_service(service, regex, command)
         icon = "✔️" if status else "❌"
         color = curses.color_pair(2) if status else curses.color_pair(1)
-        print(config.LANGUAGE_STRINGS)
-        message = "ain"#f"{icon} {service.upper()} {config.LANGUAGE_STRINGS["INSTALLED"] if status else config.LANGUAGE_STRINGS["NOT_INSTALLED"]} - {result.strip()}"
+
+        message = f"{icon}" # {service.upper()} {config.LANGUAGE_STRINGS["INSTALLED"] if status else config.LANGUAGE_STRINGS["NOT_INSTALLED"]} - {result.strip()}"
         results.append((message, color))
     
     items = [MenuItem(message, lambda win: None, color) for message, color in results]
-    additional_buttons = [MenuItem(config.LANGUAGE_STRINGS["BTN_RETURN_TO_MENU"], main)]
-    Menu(stdscr, items, label=config.LANGUAGE_STRINGS["TITLE_VALIDATE_ENVIRONMENT"], additional_buttons=additional_buttons).run()
-
-def quit_program(win):
-    config.SHOULD_QUIT = True
-
-def main(stdscr):
-    config.initialize(stdscr)
-
-    menu_items = [
-        MenuItem(config.LANGUAGE_STRINGS["VALIDATE_ENVIRONMENT"], validate_environment),
-        MenuItem(config.LANGUAGE_STRINGS["EXIT"], quit_program)
-    ]
-
-    Menu(stdscr, menu_items, config.LANGUAGE_STRINGS["TITLE_MENU"]).run()
-
-if __name__ == "__main__":
-    curses.wrapper(main)
+    #additional_buttons = [MenuItem(config.LANGUAGE_STRINGS["BTN_RETURN_TO_MENU"])]#], main)]
+    Menu(stdscr, "TITLE_VALIDATE_ENVIRONMENT", "TITLE_VALIDATE_ENVIRONMENT", items, items).run()
