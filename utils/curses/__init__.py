@@ -1,0 +1,1 @@
+from .curses import initialize_curses

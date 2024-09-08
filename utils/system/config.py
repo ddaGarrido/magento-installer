@@ -1,8 +1,8 @@
 import os
-import curses
 from os import path
 from dotenv import load_dotenv
 from .loaders import load_language, load_theme
+from utils.curses import initialize_curses
 
 BASE_CONFIG_PATH = path.abspath(path.join(path.dirname(__file__), "..", ".."))
 load_dotenv(BASE_CONFIG_PATH + "/.env")
@@ -16,7 +16,7 @@ SHOULD_QUIT = False
 LANGUAGE_STRINGS = {}
 COLOR_PAIRS = {}
 
-def initialize(stdscr):
+def set_global_variables():
     global INTERFACE_LANGUAGE, INTERFACE_THEME, MAGENTO_VERSIONS, API_TOKEN, COLOR_PAIRS
 
     INTERFACE_LANGUAGE = os.getenv("INTERFACE_LANGUAGE", "en_US")
@@ -27,17 +27,13 @@ def initialize(stdscr):
 
     os.environ["INTERFACE_LANGUAGE"] = INTERFACE_LANGUAGE
 
+def initialize(stdscr):
+    set_global_variables()
+
     load_language(INTERFACE_LANGUAGE)
     load_theme(INTERFACE_THEME)
 
-    stdscr.nodelay(1)
-    stdscr.keypad(True)
-
-    curses.noecho()
-    curses.cbreak()
-    curses.curs_set(0)
-    curses.start_color()
-    curses.start_color()
+    initialize_curses(stdscr)
 
 def get_language_string(key):
     return LANGUAGE_STRINGS[key] if key in LANGUAGE_STRINGS else key
